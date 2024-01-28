@@ -2,57 +2,88 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\SignupRequest;
 use App\Models\User;
-use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use \App\Http\Requests\StoreUserRequest;
 
 class AuthController extends Controller
 {
-    use HttpResponses;
-
-    public function login(LoginUserRequest $request)
+    public function register(SignupRequest $request)
     {
-        $request->validated($request->only(['email', 'password']));
+        $data = $request->validated();
 
-        if(!Auth::attempt($request->only(['email', 'password']))) {
+        /** @var \App\Models\User $user */
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password'])
+        ]);
+
+        //$adminToken = $user->createToken('admin-token',['create', 'update', 'delete']);
+
+        // return $this->success([
+        //     'user' => $user,
+        //     'admin-token' => $adminToken->plainTextToken,
+        //     'user-token' => $userToken->plainTextToken,
+        // ]);
+
+        $userToken = $user->createToken('user-token',['create', 'update']);
+        $token = $userToken->plainTextToken;
+
+        return response([
+            'user' => $user,
+            'token' => $token
+        ]);
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $credentials = $request->validated();
+        $remember = $credentials['remember'] ?? false;
+        unset($credentials['remember']);
+
+        if (!Auth::attempt($credentials, $remember)) {
             return response([
-                'message' => 'Provided email or password is incorrect'
+                'message' => 'The Provided credentials are not correct'
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
 
-        $adminToken = $user->createToken('admin-token',['update', 'delete']);
+        //$adminToken = $user->createToken('admin-token',['create', 'update', 'delete']);
 
-        $token = $adminToken->plainTextToken;
-        return response(compact('user', 'token'));
-    }
+        // return $this->success([
+        //     'user' => $user,
+        //     'admin-token' => $adminToken->plainTextToken,
+        //     'user-token' => $userToken->plainTextToken,
+        // ]);
 
-    public function register(StoreUserRequest $request)
-    {
-        $request->validated($request->only(['name', 'email', 'password']));
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        $user = Auth::user();
+        $userToken = $user->createToken('user-token',['create', 'update']);
+        $token = $userToken->plainTextToken;
+
+        return response([
+            'user' => $user,
+            'token' => $token
         ]);
-
-        $adminToken = $user->createToken('admin-token',['update', 'delete']);
-
-        $token = $adminToken->plainTextToken;
-        return response(compact('user', 'token'));
     }
 
     public function logout(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
+        /** @var User $user */
+        $user = Auth::user();
+        // Revoke the token that was used to authenticate the current request...
         $user->currentAccessToken()->delete();
-        return response('', 204);
+
+        return response([
+            'success' => true
+        ]);
+    }
+
+    public function me(Request $request)
+    {
+        return $request->user();
     }
 }

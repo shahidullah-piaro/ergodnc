@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
@@ -27,7 +27,7 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(StoreUserRequest $request)
+    public function store(SignupRequest $request)
         {
             $data = $request->validated(); // Use validated data directly
 
@@ -39,7 +39,7 @@ class UserController extends Controller
             if (isset($data['image'])) {
                 $data['image'] = $this->saveImage($data['image']);
             }
-            
+
             // $data = [
             //     'name' => $request->name,
             //     'email' => $request->email,
