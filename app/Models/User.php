@@ -26,6 +26,8 @@ class User extends Authenticatable
         'nid',
         'file',
         'image',
+        'audio',
+        'video',
         'start_date',
         'end_date'
     ];

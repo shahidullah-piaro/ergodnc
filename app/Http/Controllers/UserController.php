@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Http\Requests\LoginRequest;
+use App\Http\Requests\SignupRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
@@ -30,14 +30,23 @@ class UserController extends Controller
     public function store(SignupRequest $request)
         {
             $data = $request->validated(); // Use validated data directly
+            //return $data;
 
             // Handle file uploads 
             if (isset($data['file'])) {
                 $data['file'] = $this->saveFile($data['file']);
             }
-
+            // Handle image uploads
             if (isset($data['image'])) {
                 $data['image'] = $this->saveImage($data['image']);
+            }
+            // Handle audio uploads
+            if (isset($data['audio'])) {
+                $data['audio'] = $this->saveAudio($data['audio']);
+            }
+            // Handle video uploads
+            if (isset($data['video'])) {
+                $data['video'] = $this->saveVideo($data['video']);
             }
 
             // $data = [
@@ -80,19 +89,39 @@ class UserController extends Controller
         if (isset($data['file'])) {
             $data['file'] = $this->saveFile($data['file']);
 
-            // If there is an old image, delete it
+            // If there is an old file, delete it
             if ($user->file) {
                 $absolutePath = public_path($user->file);
                 File::delete($absolutePath);
             }
         }
-
+        // Handle image uploads 
         if (isset($data['image'])) {
             $data['image'] = $this->saveImage($data['image']);
 
             // If there is an old image, delete it
             if ($user->image) {
                 $absolutePath = public_path($user->image);
+                File::delete($absolutePath);
+            }
+        }
+        // Handle audio uploads
+        if (isset($data['audio'])) {
+            $data['audio'] = $this->saveAudio($data['audio']);
+
+            // If there is an old audio, delete it
+            if ($user->audio) {
+                $absolutePath = public_path($user->audio);
+                File::delete($absolutePath);
+            }
+        }
+        // Handle video uploads
+        if (isset($data['video'])) {
+            $data['video'] = $this->saveVideo($data['video']);
+
+            // If there is an old audio, delete it
+            if ($user->video) {
+                $absolutePath = public_path($user->video);
                 File::delete($absolutePath);
             }
         }
@@ -132,6 +161,18 @@ class UserController extends Controller
             File::delete($absolutePath);
         }
 
+        // If there is an old audio, delete it
+        if ($user->audio) {
+            $absolutePath = public_path($user->audio);
+            File::delete($absolutePath);
+        }
+
+        // If there is an old video, delete it
+        if ($user->video) {
+            $absolutePath = public_path($user->video);
+            File::delete($absolutePath);
+        }
+
         return response("", 204);
     }
 
@@ -159,6 +200,7 @@ class UserController extends Controller
             throw new \Exception('did not match data URI with image data');
         }
 
+        // Save the image
         $dir = 'images/';
         $file = Str::random() . '.' . $type;
         $absolutePath = public_path($dir);
@@ -210,4 +252,82 @@ class UserController extends Controller
 
         return $relativePath;
     }
+
+    private function saveAudio($audio)
+    {
+        // Check if audio is valid base64 string and data URI
+        if (!preg_match('/^data:audio\/(\w+);base64,/', $audio, $type)) {
+            throw new \Exception('Invalid base64 audio or incorrect format');
+        }
+
+        // Extract base64 encoded text and extension
+        $audio = substr($audio, strpos($audio, ',') + 1);
+        $type = strtolower($type[1]); // mp3, wav, etc.
+
+        // Check if file is an audio file
+        if (!in_array($type, ['mp3', 'wav', 'mpeg'])) { // Adjust allowed types as needed
+            throw new \Exception('Invalid audio type');
+        }
+
+        $audio = str_replace(' ', '+', $audio);
+        $audio = base64_decode($audio);
+
+        if ($audio === false) {
+            throw new \Exception('base64_decode failed');
+        }
+
+        // Save the audio file
+        $dir = 'audio/'; // Adjust directory path as needed
+        $file = Str::random() . '.' . $type;
+        $absolutePath = public_path($dir);
+        $relativePath = $dir . $file;
+
+        if (!File::exists($absolutePath)) {
+            File::makeDirectory($absolutePath, 0755, true);
+        }
+
+        file_put_contents($relativePath, $audio);
+
+        return $relativePath;
+    }
+
+
+    private function saveVideo($video)
+    {
+        // Check if video is valid base64 string and data URI
+        if (!preg_match('/^data:video\/(\w+);base64,/', $video, $type)) {
+            throw new \Exception('Invalid base64 video or incorrect format');
+        }
+
+        // Extract base64 encoded text and extension
+        $video = substr($video, strpos($video, ',') + 1);
+        $type = strtolower($type[1]); // mp4, webm, etc.
+
+        // Check if file is a video file
+        if (!in_array($type, ['mp4', 'webm'])) { // Adjust allowed types as needed
+            throw new \Exception('Invalid video type');
+        }
+
+        $video = str_replace(' ', '+', $video);
+        $video = base64_decode($video);
+
+        if ($video === false) {
+            throw new \Exception('base64_decode failed');
+        }
+
+        // Save the video file
+        $dir = 'video/'; // Adjust directory path as needed
+        $file = Str::random() . '.' . $type;
+        $absolutePath = public_path($dir);
+        $relativePath = $dir . $file;
+
+        if (!File::exists($absolutePath)) {
+            File::makeDirectory($absolutePath, 0755, true);
+        }
+
+        file_put_contents($relativePath, $video);
+
+        return $relativePath;
+    }
+
 }

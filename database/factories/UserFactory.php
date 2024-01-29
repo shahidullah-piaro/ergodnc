@@ -32,6 +32,8 @@ class UserFactory extends Factory
             'nid' => fake()->numerify('############'), // Assuming a 10-digit NID
             'file' => fake()->imageUrl(), // Adjust paths as needed
             'image' => fake()->imageUrl(),
+            'audio' => fake()->imageUrl(),
+            'video' => fake()->imageUrl(),
             'start_date' => fake()->date(),
             'end_date' => fake()->date(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // Password

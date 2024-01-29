@@ -29,6 +29,8 @@ class UserResource extends JsonResource
             'nid'=>$this->nid,
             'image_url' => $this->image ? URL::to($this->image) : null,
             'file_url' => $this->file ? URL::to($this->file) : null,
+            'audio_url' => $this->audio ? URL::to($this->audio) : null,
+            'video_url' => $this->video ? URL::to($this->video) : null,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

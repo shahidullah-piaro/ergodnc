@@ -44,6 +44,8 @@ class SignupRequest extends FormRequest
             'nid' => ['nullable','string','max:10'], // Assuming 10-digit NID
             'file' => ['nullable','string'],
             'image' => ['nullable','string'],
+            'audio' => ['nullable','string'],
+            'video' => ['nullable','string'],
             'start_date' => ['nullable','date'],
             'end_date' => ['nullable','date','after_or_equal:start_date']
         ];

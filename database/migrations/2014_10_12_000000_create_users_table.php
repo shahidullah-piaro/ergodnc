@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('nid')->nullable();
             $table->string('file')->nullable();
             $table->string('image')->nullable();
+            $table->string('audio')->nullable();
+            $table->string('video')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('password');
