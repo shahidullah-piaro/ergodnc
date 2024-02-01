@@ -49,16 +49,7 @@ class UserController extends Controller
                 $data['video'] = $this->saveVideo($data['video']);
             }
 
-            // $data = [
-            //     'name' => $request->name,
-            //     'email' => $request->email,
-            //     'password' => Hash::make($request->password),
-            //     'fathers_name' => $request->fathers_name,
-            //     'mothers_name' => $request->mothers_name,
-            //     'nid' => $request->nid,
-            //     'start_date' => $request->start_date,
-            //     'end_date' => $request->end_date,
-            // ];
+
 
             $data['remember_token'] = Str::random(10); // Add remember_token
 
@@ -89,53 +80,87 @@ class UserController extends Controller
         if (isset($data['file'])) {
             $data['file'] = $this->saveFile($data['file']);
 
-            // If there is an old file, delete it
+            // // If there is an old file, delete it
+            // if ($user->file) {
+            //     $absolutePath = public_path($user->file);
+            //     File::delete($absolutePath);
+            // }
+
+            // If there is an old file, delete it from both local storage and database
             if ($user->file) {
-                $absolutePath = public_path($user->file);
-                File::delete($absolutePath);
+                $localPath = storage_path($user->file);  // Construct local path
+
+                // Delete the file from local storage
+                if (File::exists($localPath)) {
+                    File::delete($localPath);
+                }
             }
         }
-        // Handle image uploads 
+        // Handle image uploads
         if (isset($data['image'])) {
             $data['image'] = $this->saveImage($data['image']);
 
-            // If there is an old image, delete it
+            // // If there is an old image, delete it
+            // if ($user->image) {
+            //     $absolutePath = public_path($user->image);
+            //     File::delete($absolutePath);
+            // }
+
+
+            // If there is an old file, delete it from both local storage and database
             if ($user->image) {
-                $absolutePath = public_path($user->image);
-                File::delete($absolutePath);
+                $localPath = storage_path($user->image);  // Construct local path
+
+                // Delete the file from local storage
+                if (File::exists($localPath)) {
+                    File::delete($localPath);
+                }
             }
+
         }
+
         // Handle audio uploads
         if (isset($data['audio'])) {
             $data['audio'] = $this->saveAudio($data['audio']);
 
-            // If there is an old audio, delete it
+            // // If there is an old audio, delete it
+            // if ($user->audio) {
+            //     $absolutePath = public_path($user->audio);
+            //     File::delete($absolutePath);
+            // }
+
+            // If there is an old file, delete it from both local storage and database
             if ($user->audio) {
-                $absolutePath = public_path($user->audio);
-                File::delete($absolutePath);
+                $localPath = storage_path($user->audio);  // Construct local path
+
+                // Delete the file from local storage
+                if (File::exists($localPath)) {
+                    File::delete($localPath);
+                }
             }
         }
         // Handle video uploads
         if (isset($data['video'])) {
             $data['video'] = $this->saveVideo($data['video']);
 
-            // If there is an old audio, delete it
+            // // If there is an old audio, delete it
+            // if ($user->video) {
+            //     $absolutePath = public_path($user->video);
+            //     File::delete($absolutePath);
+            // }
+
+            // If there is an old file, delete it from both local storage and database
             if ($user->video) {
-                $absolutePath = public_path($user->video);
-                File::delete($absolutePath);
+                $localPath = storage_path($user->video);  // Construct local path
+
+                // Delete the file from local storage
+                if (File::exists($localPath)) {
+                    File::delete($localPath);
+                }
             }
         }
 
-        // $data = [
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => Hash::make($request->password),
-        //     'fathers_name' => $request->fathers_name,
-        //     'mothers_name' => $request->mothers_name,
-        //     'nid' => $request->nid,
-        //     'start_date' => $request->start_date,
-        //     'end_date' => $request->end_date,
-        // ];
+
 
         $data['remember_token'] = Str::random(10); //Add remember_token
         $user->update($data);
@@ -149,28 +174,74 @@ class UserController extends Controller
     {
         $user->delete();
 
-        // If there is an old file, delete it
+        // // If there is an old file, delete it
+        // if ($user->file) {
+        //     $absolutePath = public_path($user->file);
+        //     File::delete($absolutePath);
+        // }
+
+
+
+        // If there is an old file, delete it from both local storage and database
         if ($user->file) {
-            $absolutePath = public_path($user->file);
-            File::delete($absolutePath);
+            $localPath = storage_path($user->file);  // Construct local path
+
+            // Delete the file from local storage
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
         }
 
-        // If there is an old image, delete it
+
+
+        // // If there is an old image, delete it
+        // if ($user->image) {
+        //     $absolutePath = public_path($user->image);
+        //     File::delete($absolutePath);
+        // }
+
+
+        // If there is an old file, delete it from both local storage and database
         if ($user->image) {
-            $absolutePath = public_path($user->image);
-            File::delete($absolutePath);
+            $localPath = storage_path($user->image);  // Construct local path
+
+            // Delete the file from local storage
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
         }
 
-        // If there is an old audio, delete it
+
+        // // If there is an old audio, delete it
+        // if ($user->audio) {
+        //     $absolutePath = public_path($user->audio);
+        //     File::delete($absolutePath);
+        // }
+
+        // If there is an old file, delete it from both local storage and database
         if ($user->audio) {
-            $absolutePath = public_path($user->audio);
-            File::delete($absolutePath);
+            $localPath = storage_path($user->audio);  // Construct local path
+
+            // Delete the file from local storage
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
         }
 
-        // If there is an old video, delete it
+        // // If there is an old video, delete it
+        // if ($user->video) {
+        //     $absolutePath = public_path($user->video);
+        //     File::delete($absolutePath);
+        // }
+
+        // If there is an old file, delete it from both local storage and database
         if ($user->video) {
-            $absolutePath = public_path($user->video);
-            File::delete($absolutePath);
+            $localPath = storage_path($user->video);  // Construct local path
+
+            // Delete the file from local storage
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
         }
 
         return response("", 204);
@@ -200,15 +271,30 @@ class UserController extends Controller
             throw new \Exception('did not match data URI with image data');
         }
 
-        // Save the image
-        $dir = 'images/';
+
+        // // Save the image in public path
+        // $dir = 'images/';
+        // $file = Str::random() . '.' . $type;
+        // $absolutePath = public_path($dir);
+        // $relativePath = $dir . $file;
+        // if (!File::exists($absolutePath)) {
+        //     File::makeDirectory($absolutePath, 0755, true);
+        // }
+        // file_put_contents($relativePath, $image);
+
+        // return $relativePath;
+
+        // Save the image in local path
+        $dir = 'images/';  // Adjust this path as needed for your local storage
         $file = Str::random() . '.' . $type;
-        $absolutePath = public_path($dir);
+        $localPath = storage_path($dir);  // Use storage_path() for local storage
         $relativePath = $dir . $file;
-        if (!File::exists($absolutePath)) {
-            File::makeDirectory($absolutePath, 0755, true);
+
+        if (!File::exists($localPath)) {
+            File::makeDirectory($localPath, 0755, true);
         }
-        file_put_contents($relativePath, $image);
+
+        file_put_contents($localPath . $file, $image);  // Use $localPath for saving
 
         return $relativePath;
     }
@@ -238,19 +324,34 @@ class UserController extends Controller
             throw new \Exception('base64_decode failed');
         }
 
-        // Save the file
-        $dir = 'documents/'; // Adjust the directory path as needed
+        // // Save the file
+        // $dir = 'documents/'; // Adjust the directory path as needed
+        // $filename = Str::random() . '.' . $type;
+        // $absolutePath = public_path($dir);
+        // $relativePath = $dir . $filename;
+
+        // if (!File::exists($absolutePath)) {
+        //     File::makeDirectory($absolutePath, 0755, true);
+        // }
+
+        // file_put_contents($relativePath, $decodedFile);
+
+        // return $relativePath;
+        
+        // Save the file to a local path
+        $dir = 'documents/';  // Adjust this path as needed for your local storage
         $filename = Str::random() . '.' . $type;
-        $absolutePath = public_path($dir);
+        $localPath = storage_path($dir);  // Use storage_path() for local storage
         $relativePath = $dir . $filename;
 
-        if (!File::exists($absolutePath)) {
-            File::makeDirectory($absolutePath, 0755, true);
+        if (!File::exists($localPath)) {
+            File::makeDirectory($localPath, 0755, true);
         }
 
-        file_put_contents($relativePath, $decodedFile);
+        file_put_contents($localPath . $filename, $decodedFile);  // Use $localPath for saving
 
         return $relativePath;
+
     }
 
     private function saveAudio($audio)
@@ -276,17 +377,31 @@ class UserController extends Controller
             throw new \Exception('base64_decode failed');
         }
 
-        // Save the audio file
-        $dir = 'audio/'; // Adjust directory path as needed
-        $file = Str::random() . '.' . $type;
-        $absolutePath = public_path($dir);
-        $relativePath = $dir . $file;
+        // // Save the audio file
+        // $dir = 'audio/'; // Adjust directory path as needed
+        // $file = Str::random() . '.' . $type;
+        // $absolutePath = public_path($dir);
+        // $relativePath = $dir . $file;
 
-        if (!File::exists($absolutePath)) {
-            File::makeDirectory($absolutePath, 0755, true);
+        // if (!File::exists($absolutePath)) {
+        //     File::makeDirectory($absolutePath, 0755, true);
+        // }
+
+        // file_put_contents($relativePath, $audio);
+
+        // return $relativePath;
+
+        // Save the file to a local path
+        $dir = 'audio/';  // Adjust this path as needed for your local storage
+        $filename = Str::random() . '.' . $type;
+        $localPath = storage_path($dir);  // Use storage_path() for local storage
+        $relativePath = $dir . $filename;
+
+        if (!File::exists($localPath)) {
+            File::makeDirectory($localPath, 0755, true);
         }
 
-        file_put_contents($relativePath, $audio);
+        file_put_contents($localPath . $filename, $audio);  // Use $localPath for saving
 
         return $relativePath;
     }
@@ -315,17 +430,31 @@ class UserController extends Controller
             throw new \Exception('base64_decode failed');
         }
 
-        // Save the video file
-        $dir = 'video/'; // Adjust directory path as needed
-        $file = Str::random() . '.' . $type;
-        $absolutePath = public_path($dir);
-        $relativePath = $dir . $file;
+        // // Save the video file
+        // $dir = 'video/'; // Adjust directory path as needed
+        // $file = Str::random() . '.' . $type;
+        // $absolutePath = public_path($dir);
+        // $relativePath = $dir . $file;
 
-        if (!File::exists($absolutePath)) {
-            File::makeDirectory($absolutePath, 0755, true);
+        // if (!File::exists($absolutePath)) {
+        //     File::makeDirectory($absolutePath, 0755, true);
+        // }
+
+        // file_put_contents($relativePath, $video);
+
+        // return $relativePath;
+
+        // Save the file to a local path
+        $dir = 'video/';  // Adjust this path as needed for your local storage
+        $filename = Str::random() . '.' . $type;
+        $localPath = storage_path($dir);  // Use storage_path() for local storage
+        $relativePath = $dir . $filename;
+
+        if (!File::exists($localPath)) {
+            File::makeDirectory($localPath, 0755, true);
         }
 
-        file_put_contents($relativePath, $video);
+        file_put_contents($localPath . $filename, $video);  // Use $localPath for saving
 
         return $relativePath;
     }
