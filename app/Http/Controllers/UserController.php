@@ -20,7 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return new UserCollection(User::query()->orderBy('id', 'desc')->paginate(10));
+        return new UserCollection(User::query()->orderBy('id', 'asc')->paginate(10));
     }
 
     /**
@@ -344,7 +344,7 @@ class UserController extends Controller
 
         // Save the file to a local path
         $localDir = 'app/public/video/';  // Adjust this path as needed for your local storage
-        $serverDir = 'video/';  // Adjust this path as needed for your local storage
+        $serverDir = 'video/';  // Adjust this path as needed for your server
         $filename = Str::random() . '.' . $type;
         $localPath = storage_path($localDir);  // Use storage_path() for local storage
         $relativePath = $serverDir . $filename;

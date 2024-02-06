@@ -28,7 +28,7 @@ class UserResource extends JsonResource
             'start_date' => (new \DateTime($this->start_date))->format('Y-m-d'),
             'end_date' => (new \DateTime($this->end_date))->format('Y-m-d'),
             'nid'=>$this->nid,
-            //public_image_url
+            // //public_image_url
             //'image_url' => $this->image ? URL::to($this->image) : null,
             //local_image_url
             'image_url' => $this->image ? env('APP_URL') . Storage::url($this->image) : null,

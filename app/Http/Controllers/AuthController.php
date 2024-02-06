@@ -7,6 +7,11 @@ use App\Http\Requests\SignupRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as RulesPassword;
 
 class AuthController extends Controller
 {
@@ -21,21 +26,9 @@ class AuthController extends Controller
             'password' => bcrypt($data['password'])
         ]);
 
-        //$adminToken = $user->createToken('admin-token',['create', 'update', 'delete']);
+        $tString = Hash::make($request->email . $request->password);
 
-        // return $this->success([
-        //     'user' => $user,
-        //     'admin-token' => $adminToken->plainTextToken,
-        //     'user-token' => $userToken->plainTextToken,
-        // ]);
-
-        $userToken = $user->createToken('user-token',['create', 'update']);
-        $token = $userToken->plainTextToken;
-
-        return response([
-            'user' => $user,
-            'token' => $token
-        ]);
+        return response($this->createAuthToken($user, $tString), 200);
     }
 
     public function login(LoginRequest $request)
@@ -50,24 +43,12 @@ class AuthController extends Controller
             ], 422);
         }
 
-
-        //$adminToken = $user->createToken('admin-token',['create', 'update', 'delete']);
-
-        // return $this->success([
-        //     'user' => $user,
-        //     'admin-token' => $adminToken->plainTextToken,
-        //     'user-token' => $userToken->plainTextToken,
-        // ]);
-
-
         $user = Auth::user();
-        $userToken = $user->createToken('user-token',['create', 'update']);
-        $token = $userToken->plainTextToken;
 
-        return response([
-            'user' => $user,
-            'token' => $token
-        ]);
+        $tString = Hash::make($request->email . $request->password);
+
+        return response($this->createAuthToken($user, $tString), 200);
+
     }
 
     public function logout(Request $request)
@@ -82,8 +63,113 @@ class AuthController extends Controller
         ]);
     }
 
+
+    function sendResetLink(Request $request)
+    {
+        // 
+        $request->validate(['email' => 'required|email:rfc,dns']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $responseMessage = [
+                'statusCode' => 200,
+                'status' => 'Success',
+                'message' => 'Password reset link sent to the email address.',
+            ];
+
+            return response($responseMessage);
+        } else {
+
+            $responseMessage = [
+                'statusCode' => 422,
+                'status' => 'Error',
+                'errors' => ['email' => ['The email address do not match our records.'],],
+
+            ];
+
+            return response($responseMessage, 422);
+        }
+    }
+
+
+    function resetPassword(Request $request)
+    { 
+        $request->validate([
+            'token' => 'required',
+            'email' => ['required', 'email:rfc,dns'],
+            'password' => [
+                'required', 'confirmed',
+                RulesPassword::min(8)->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+            ],
+        ]);
+
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+            }
+        );
+
+
+
+        if ($status === Password::PASSWORD_RESET) {
+            $responseMessage = [
+                'statusCode' => 200,
+                'status' => 'Success',
+                'message' => 'Password reset successfully. Please, login again.'
+            ];
+
+            return response($responseMessage);
+        } else if ($status === Password::INVALID_TOKEN) {
+
+            $responseMessage = [
+                'statusCode' => 422,
+                'status' => 'Error',
+                'errors' => ['token' => ['Invalid reset token.'],],
+            ];
+
+            return response($responseMessage, 422);
+        } else {
+
+            $responseMessage = [
+                'statusCode' => 422,
+                'status' => 'Error',
+                'errors' => ['email' => ['The email address do not match our records.'],],
+            ];
+
+            return response($responseMessage, 422);
+        }
+    }
+
+
     public function me(Request $request)
     {
         return $request->user();
+    }
+
+
+    private function createAuthToken($user, $tokenString)
+    {
+        $responseMessage = [
+            'statusCode' => 200,
+            'status' => 'Success',
+            "id" => (string)$user->id,
+            "name" => $user->name,
+            "email" => $user->email,
+            'token' => $user->createToken($tokenString, ['create', 'update'], now()->addDays(180))->plainTextToken,
+        ];
+
+        return $responseMessage;
     }
 }
