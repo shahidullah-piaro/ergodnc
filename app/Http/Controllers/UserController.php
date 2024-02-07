@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Repositories\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
 
 class UserController extends Controller
@@ -18,9 +20,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    private $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository){
+        $this->userRepository = $userRepository;
+    } 
+
+
     public function index()
     {
-        return new UserCollection(User::query()->orderBy('id', 'asc')->paginate(10));
+        return new UserCollection($this->userRepository->all());
     }
 
     /**
@@ -53,7 +63,7 @@ class UserController extends Controller
 
             $data['remember_token'] = Str::random(10); // Add remember_token
 
-            $user = User::create($data);
+            $user = $this->userRepository->store($data);
 
             return response(new UserResource($user), 201);
         }
@@ -62,8 +72,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
+        $user = $this->userRepository->show($id);
         return new UserResource($user);
     }
 
@@ -72,9 +83,10 @@ class UserController extends Controller
      */
 
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, $id)
     {
         $data = $request->validated(); //Use validated data directly
+        $user = User::find($id);
 
         // Handle file uploads 
         if (isset($data['file'])) {
@@ -138,16 +150,18 @@ class UserController extends Controller
 
 
         $data['remember_token'] = Str::random(10); //Add remember_token
-        $user->update($data);
+        $this->userRepository->update($data, $id);
+        $user = User::find($id);
         return new UserResource($user);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        $user->delete();
+        $user = User::find($id);
+        $this->userRepository->delete($id);
 
         // If there is an old file, delete it from both local storage and database
         if ($user->file) {
