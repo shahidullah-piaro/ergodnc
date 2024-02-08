@@ -26,4 +26,15 @@ class UserRepository implements UserRepositoryInterface{
         $user = User::find($id);
         $user->delete();
     }
+
+    // public function findByFilters($filters)
+    // {
+    //     $query = User::query();
+
+    //     foreach ($filters as $filter) {
+    //         $query = $filter->apply($query);
+    //     }
+
+    //     return $query->get();
+    // }
 }

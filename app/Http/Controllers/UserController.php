@@ -25,7 +25,7 @@ class UserController extends Controller
 
     public function __construct(UserRepositoryInterface $userRepository){
         $this->userRepository = $userRepository;
-    } 
+    }
 
 
     public function index()
@@ -86,7 +86,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, $id)
     {
         $data = $request->validated(); //Use validated data directly
-        $user = User::find($id);
+        $user = $this->userRepository->show($id);
 
         // Handle file uploads 
         if (isset($data['file'])) {
@@ -151,7 +151,7 @@ class UserController extends Controller
 
         $data['remember_token'] = Str::random(10); //Add remember_token
         $this->userRepository->update($data, $id);
-        $user = User::find($id);
+        $user = $this->userRepository->show($id);
         return new UserResource($user);
     }
 
@@ -160,7 +160,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
+        $user = $this->userRepository->show($id);
         $this->userRepository->delete($id);
 
         // If there is an old file, delete it from both local storage and database

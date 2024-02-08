@@ -3,6 +3,7 @@ namespace App\Repositories\Interfaces;
 
 interface UserRepositoryInterface
 {
+
     public function all();
 
     public function store($data);
@@ -12,5 +13,7 @@ interface UserRepositoryInterface
     public function update($data, $id);
 
     public function delete($id);
+
+    //public function findByFilters($filters);
 
 }
