@@ -28,10 +28,18 @@ class UserController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
+        // $filter = array_keys($request->all());
+        // if($filter){
+        //     $filterValue = $request[$filter[0]];
+        //     return new UserCollection($this->userRepository->findByFilters($filter[0], $filterValue));
+        // }else{
+        //     return new UserCollection($this->userRepository->all());
+        // }
         return new UserCollection($this->userRepository->all());
     }
+
 
     /**
      * Store a newly created resource in storage.

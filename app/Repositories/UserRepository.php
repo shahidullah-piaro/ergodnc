@@ -27,14 +27,8 @@ class UserRepository implements UserRepositoryInterface{
         $user->delete();
     }
 
-    // public function findByFilters($filters)
-    // {
-    //     $query = User::query();
-
-    //     foreach ($filters as $filter) {
-    //         $query = $filter->apply($query);
-    //     }
-
-    //     return $query->get();
+    // public function findByFilters($filter, $filterValue){        
+    //     return User::query()->orderBy('id', 'asc')->where($filter, 'LIKE', '%%' . $filterValue . '%%')->paginate(5);
     // }
+
 }
