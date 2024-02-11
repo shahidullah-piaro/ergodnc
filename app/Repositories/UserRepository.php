@@ -27,8 +27,4 @@ class UserRepository implements UserRepositoryInterface{
         $user->delete();
     }
 
-    // public function findByFilters($filter, $filterValue){        
-    //     return User::query()->orderBy('id', 'asc')->where($filter, 'LIKE', '%%' . $filterValue . '%%')->paginate(5);
-    // }
-
 }

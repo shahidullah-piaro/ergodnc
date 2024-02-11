@@ -14,6 +14,4 @@ interface UserRepositoryInterface
 
     public function delete($id);
 
-    //public function findByFilters($filter, $filterValue);
-
 }
