@@ -34,7 +34,7 @@ class StudentsController
         }
     }
 
-    public function update(Request $request): Response
+    public function store(Request $request): Response
     {
         try {
             $dataArray = ($request->toArray() !== [])

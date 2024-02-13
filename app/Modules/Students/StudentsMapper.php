@@ -14,10 +14,13 @@ class StudentsMapper
             MyHelpers::nullStringToInt($data["id"] ?? null),
             $data["name"],
             $data["email"],
+            //MyHelpers::saveFile($data['avatar']),
+            $data['avatar'],
             $data["deletedAt"] ?? null,
             $data["createdAt"] ?? date("Y-m-d H:i:s"),
-            $data["updatedAt"] ?? null,
+            $data["updatedAt"] ?? null
 
         );
     }
+
 }

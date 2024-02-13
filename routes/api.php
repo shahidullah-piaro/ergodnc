@@ -18,16 +18,17 @@ use App\Http\Controllers\StudentsController;
 |
 */
 
-// Public routes
+//Public routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
-// Protected routes
+//Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    
+
+    //Auth Controller
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
 
     //Student Controller
-    Route::POST("/students", [StudentsController::class, "update"]);
+    Route::POST("/students", [StudentsController::class, "store"]);
     Route::GET("/students/{id}", [StudentsController::class, "get"]);
     Route::DELETE("/students/{id}", [StudentsController::class, "softDelete"]);
     

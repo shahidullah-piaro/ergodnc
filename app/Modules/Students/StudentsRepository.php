@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Students;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use InvalidArgumentException;
 
 class StudentsRepository
@@ -14,6 +15,7 @@ class StudentsRepository
         "students.id",
         "students.name",
         "students.email",
+        "students.avatar",
         "students.deleted_at AS deletedAt",
         "students.created_at AS createdAt",
         "students.updated_at AS updatedAt"
@@ -40,6 +42,22 @@ class StudentsRepository
 
     public function update(Students $student): Students
     {
+        // If there is an old file, delete it from both local storage and database
+        if($student->getId()){
+
+            $serverStudent = DB::table($this->tableName)
+            ->where('id', $student->getId())
+            ->first();
+
+            if($serverStudent->avatar){
+                $localPath = storage_path('app/public/'.$serverStudent->avatar);  // Construct local path
+
+                // Delete the file from local storage
+                if (File::exists($localPath)) {
+                    File::delete($localPath);
+                }
+            }
+        }
         return DB::transaction(function () use ($student) {
             DB::table($this->tableName)->updateOrInsert([
                 "id" => $student->getId()
@@ -55,6 +73,20 @@ class StudentsRepository
 
     public function softDelete(int $id): bool
     {
+        $student = DB::table($this->tableName)
+        ->where('id', $id)
+        ->first();
+
+        // If there is an old file, delete it from both local storage and database
+        if ($student->avatar) {
+            $localPath = storage_path('app/public/'.$student->avatar);  // Construct local path
+
+            // Delete the file from local storage
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
+        }
+
         $result = DB::table($this->tableName)
             ->where("id", $id)
             ->where("deleted_at", null)

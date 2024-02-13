@@ -13,7 +13,8 @@ class StudentsValidator
     {
         $validator = validator($data, [
             "name" => "required|string",
-            "email" => "required|string|email",
+            'email' => 'required|string|email|unique:students,email',
+            'avatar' => 'required|string',
         ]);
 
         if ($validator->fails()) {
