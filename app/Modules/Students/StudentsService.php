@@ -34,6 +34,14 @@ class StudentsService
         return $this->repository->getByCourseId($courseId);
     }
 
+    /**
+     * @return Students[]
+     */
+    public function index() //: array
+    {
+        return $this->repository->index();
+    }
+
     public function update(array $data) : Students
     {
         $this->validator->validateUpdate($data);

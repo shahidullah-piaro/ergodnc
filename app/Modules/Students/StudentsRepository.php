@@ -123,4 +123,27 @@ class StudentsRepository
             return StudentsMapper::mapFrom($row);
         }, $result);
     }
+
+    public function index() : array 
+    {
+        $selectColumns = implode(", ", $this->selectColumns);
+
+        $total = DB::select("SELECT count(*) AS total_items FROM {$this->tableName};
+        ");
+        
+        $result = DB::select("SELECT $selectColumns
+        FROM {$this->tableName}
+        WHERE deleted_at IS NULL And id > 5 ORDER BY id ASC LIMIT 5;
+        ");
+
+        if (count($result) === 0) {
+           return [];
+        }
+        // $type = gettype($result);
+        // dd($type);
+
+        return $result;
+    }
+
+    
 }

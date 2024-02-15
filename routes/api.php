@@ -36,7 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
 
     //Student Controller
-    Route::POST("/students", [StudentsController::class, "store"]);
+    Route::POST("/students", [StudentsController::class, "update"]);
+    Route::GET("/students", [StudentsController::class, "index"]);
     Route::GET("/students/{id}", [StudentsController::class, "get"]);
     Route::DELETE("/students/{id}", [StudentsController::class, "softDelete"]);
     

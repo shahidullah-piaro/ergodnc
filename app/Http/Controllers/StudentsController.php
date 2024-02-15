@@ -9,6 +9,9 @@ use App\Modules\Students\StudentsService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Modules\Students\StudentsMapper;
+use App\Http\Controllers\Log;
+
 
 class StudentsController
 {
@@ -34,7 +37,39 @@ class StudentsController
         }
     }
 
-    public function store(Request $request): Response
+
+    public function index() : Response
+    {
+        try {
+            $data = $this->service->index();
+
+            // Check if data is empty
+            if (empty($data)) {
+                return new Response(
+                    [
+                        "message" => "No data found",
+                    ],
+                    HTTPResponseCodes::NotFound["code"]
+                );
+            }
+
+            return new Response(
+                $data,
+                HTTPResponseCodes::Sucess["code"]
+            );
+        } catch (Exception $error) {
+
+            return new Response(
+                [
+                    "exception" => get_class($error),
+                    "errors" => $error->getMessage()
+                ],
+                HTTPResponseCodes::BadRequest["code"]
+            );
+        }
+    }
+
+    public function update(Request $request): Response
     {
         try {
             $dataArray = ($request->toArray() !== [])
