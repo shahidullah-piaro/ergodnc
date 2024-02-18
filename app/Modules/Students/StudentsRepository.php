@@ -124,26 +124,82 @@ class StudentsRepository
         }, $result);
     }
 
-    public function index() : array 
+    /**
+    * @return Students[]
+    */
+    public function index($page): array
     {
+
+        $pagination = 4;  // Set desired page size
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;  // Get page number from request
+
+        // Calculate offset dynamically based on page number and pagination
+        $offset = ($page - 1) * $pagination;
+
+        $baseUrl = 'http://127.0.0.1:8000/api/students';
+
+        // Calculate total count (optional)
+        $totalCount = DB::table($this->tableName)
+            ->where('deleted_at', null)
+            ->count();
+
+        $totalPages = (int) ceil(($totalCount + 1) / $pagination);
+        // Build the actual query with LIMIT and OFFSET
         $selectColumns = implode(", ", $this->selectColumns);
-
-        $total = DB::select("SELECT count(*) AS total_items FROM {$this->tableName};
-        ");
-        
         $result = DB::select("SELECT $selectColumns
-        FROM {$this->tableName}
-        WHERE deleted_at IS NULL And id > 5 ORDER BY id ASC LIMIT 5;
-        ");
-
-        if (count($result) === 0) {
-           return [];
+                            FROM {$this->tableName}
+                            WHERE deleted_at IS NULL
+                            LIMIT $pagination OFFSET $offset");
+         
+        
+        // Validate inputs
+        if ($totalPages <= 0 || $offset < 0) {
+            throw new InvalidArgumentException('Invalid page size or offset: must be positive integers');
         }
-        // $type = gettype($result);
-        // dd($type);
 
-        return $result;
+
+        $currentPage = (int) ceil($offset / $totalPages) + 1; // 1-based indexing
+
+        // Generate previous and next links, considering edge cases
+        $previousLink = null;
+        $nextLink = null;
+
+        if ($currentPage > 1) {
+            $previousLink = "<a href='" . $baseUrl . '?' . http_build_query(['page' => $currentPage - 1]) . "'>Previous</a>";
+        }
+
+        if ($currentPage < $totalPages) {
+            $nextLink = "<a href='" . $baseUrl . '?' . http_build_query(['page' => $currentPage + 1]) . "'>Next</a>";
+        }
+
+        // Generate access links (considering edge cases and error handling)
+        $pageLinks = [];
+        if ($totalPages > 1) {
+            // Adjust link range based on your preference
+            $startPage = 1;
+
+            for ($page = $startPage; $page <= $totalPages; $page++) {
+                $link = "";
+
+                if ($page === $currentPage) {
+                    $link = "<strong>$page</strong>"; // Current page as bold
+                } else {
+                    // Construct access link using the provided base URL and query parameters
+                    $queryParams = ['page' => $page];
+                    $link = "<a href='" . $baseUrl . '?' . http_build_query($queryParams) . "'>$page</a>";
+                }
+
+                $pageLinks[] = $link;
+            }
+        }
+
+        return [
+            'data' => $result,
+            'pages' => $totalPages,
+            'links' => $pageLinks,
+            'previous' => $previousLink,
+            'next' => $nextLink,
+        ];
     }
-
-    
+ 
 }

@@ -38,10 +38,10 @@ class StudentsController
     }
 
 
-    public function index() : Response
+    public function index($page = 2) : Response
     {
         try {
-            $data = $this->service->index();
+            $data = $this->service->index($page);
 
             // Check if data is empty
             if (empty($data)) {

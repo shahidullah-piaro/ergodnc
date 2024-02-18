@@ -37,9 +37,9 @@ class StudentsService
     /**
      * @return Students[]
      */
-    public function index() //: array
+    public function index($page) : array
     {
-        return $this->repository->index();
+        return $this->repository->index($page);
     }
 
     public function update(array $data) : Students
